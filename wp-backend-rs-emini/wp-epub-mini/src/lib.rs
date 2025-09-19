@@ -107,7 +107,7 @@ pub async fn download_wattpad_story_as_epub(
 
     // --- 5. Build EPUB ---
     let mut epub_builder = EpubBuilder::default()
-        .with_title(escape_xml_chars(story.title()))
+        .with_title(story.title())
         .with_creator(escape_xml_chars(story.user().username()))
         .with_description(escape_xml_chars(story.description()));
 
