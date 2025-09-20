@@ -107,8 +107,8 @@ pub async fn download_wattpad_story_as_epub(
 
     // --- 5. Build EPUB ---
     let mut epub_builder = EpubBuilder::default()
-        .with_title(escape_xml_chars_for_title(story.title()))
-        .with_creator(story.user().username())
+        .with_title(story.title())
+        .with_creator(escape_xml_chars(story.user().username()))
         .with_description(escape_xml_chars(story.description()));
 
     if let Ok(Some(cover_data)) = download_image(reqwest_client, story.cover()).await {
@@ -144,10 +144,6 @@ fn escape_xml_chars(s: &str) -> String {
      .replace('>', "&gt;")
      .replace('"', "&quot;")
      .replace('\'', "&apos;")
-}
-
-fn escape_xml_chars_for_title(s: &str) -> String {
-    s.replace('&', "&amp;")
 }
 
 fn re_encode_html(html_fragment: &str) -> Result<String> {
