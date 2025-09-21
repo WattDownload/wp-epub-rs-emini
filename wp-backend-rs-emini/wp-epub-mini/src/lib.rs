@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Context, Result};
 use futures::stream::{self, StreamExt};
-use iepub::prelude::{EpubBuilder, EpubHtml};
+use zepub::prelude::{EpubBuilder, EpubHtml};
 use lol_html::{element, html_content::ContentType, HtmlRewriter, Settings};
 use once_cell::sync::Lazy;
 use quick_xml::events::Event;
@@ -107,9 +107,9 @@ pub async fn download_wattpad_story_as_epub(
 
     // --- 5. Build EPUB ---
     let mut epub_builder = EpubBuilder::default()
-        .with_title(escape_xml_chars(story.title()))
-        .with_creator(escape_xml_chars(story.user().username()))
-        .with_description(escape_xml_chars(story.description()));
+        .with_title(story.title())
+        .with_creator(story.user().username())
+        .with_description(story.description());
 
     if let Ok(Some(cover_data)) = download_image(reqwest_client, story.cover()).await {
         epub_builder = epub_builder.cover("cover.jpg", cover_data);
