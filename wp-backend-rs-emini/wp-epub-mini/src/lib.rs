@@ -150,7 +150,7 @@ fn re_encode_html(html_fragment: &str) -> Result<String> {
     let wrapped_html = format!("<root>{}</root>", html_fragment);
     let mut reader = Reader::from_str(&wrapped_html);
     let config = reader.config_mut();
-    config.trim_text(true);
+    config.trim_text(false);
     config.expand_empty_elements = false;
     let mut writer = Writer::new(Cursor::new(Vec::new()));
     loop {
