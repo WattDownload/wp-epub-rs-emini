@@ -81,7 +81,7 @@ jobs:
       run: cargo build --release
       
     - name: Generate Kotlin Bindings
-      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/uniffi_wp_epub_mini.dll --language kotlin --out-dir ./bindings/
+      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
 
     - name: Organize Artifacts
       run: |
@@ -119,7 +119,7 @@ jobs:
       run: cargo build --release
       
     - name: Generate Kotlin Bindings
-      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/uniffi_wp_epub_mini.dll --language kotlin --out-dir ./bindings/
+      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/libuniffi_wp_epub_mini.dylib --language kotlin --out-dir ./bindings/
 
     - name: Organize Artifacts
       run: |
