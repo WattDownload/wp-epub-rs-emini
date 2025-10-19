@@ -1,20 +1,22 @@
 package us.wprust.jvm.components.menubar
 
+import com.formdev.flatlaf.extras.FlatSVGIcon
+import com.formdev.flatlaf.extras.components.FlatButton
+import com.formdev.flatlaf.extras.components.FlatButton.ButtonType
 import raven.modal.ModalDialog
 import raven.modal.component.SimpleModalBorder
 import us.wprust.jvm.components.menubar.menu_panels.About
 import us.wprust.jvm.components.menubar.menu_panels.Acknowledgements
 import us.wprust.jvm.components.menubar.menu_panels.License
+import us.wprust.jvm.utils.AppSettings.allowedConcurrencyValues
+import us.wprust.jvm.utils.AppSettings.concurrentChapterCount
 import java.awt.Desktop
 import java.awt.event.ActionEvent
 import java.io.IOException
 import java.net.URI
-import javax.swing.JFrame
-import javax.swing.JMenu
-import javax.swing.JMenuBar
-import javax.swing.JMenuItem
-import javax.swing.JSeparator
+import javax.swing.*
 import kotlin.system.exitProcess
+
 
 object MenuBar {
     fun createMenuBar(frame: JFrame): JMenuBar {
@@ -23,6 +25,13 @@ object MenuBar {
         val fileMenu = JMenu("File")
         fileMenu.setMnemonic('F')
         menuBar.add(fileMenu)
+
+        val settingsItem = JMenuItem("Settings")
+        settingsItem.setMnemonic('S')
+        settingsItem.addActionListener { _: ActionEvent? -> settingsAction(frame) }
+        fileMenu.add(settingsItem)
+
+        fileMenu.add(JSeparator())
 
         val exitItem = JMenuItem("Exit")
         exitItem.setMnemonic('X')
@@ -37,21 +46,18 @@ object MenuBar {
         aboutItem.setMnemonic('A')
         aboutItem.addActionListener { _: ActionEvent? ->
             ModalDialog.showModal(
-                frame, SimpleModalBorder(About(), "About"),
-                ModalDialog.createOption().setAnimationEnabled(true)
+                frame, SimpleModalBorder(About(), "About"), ModalDialog.createOption().setAnimationEnabled(true)
             )
         }
         helpMenu.add(aboutItem)
 
-        val separator = JSeparator()
-        helpMenu.add(separator)
+        helpMenu.add(JSeparator())
 
         val licenseItem = JMenuItem("License")
         licenseItem.setMnemonic('L')
         licenseItem.addActionListener { _: ActionEvent? ->
             ModalDialog.showModal(
-                frame, SimpleModalBorder(License(), "License"),
-                ModalDialog.createOption().setAnimationEnabled(true)
+                frame, SimpleModalBorder(License(), "License"), ModalDialog.createOption().setAnimationEnabled(true)
             )
         }
         helpMenu.add(licenseItem)
@@ -84,12 +90,44 @@ object MenuBar {
         acknowledgementsItem.setMnemonic('K')
         acknowledgementsItem.addActionListener { _: ActionEvent? ->
             ModalDialog.showModal(
-                frame, SimpleModalBorder(Acknowledgements(), "Acknowledgements"),
+                frame,
+                SimpleModalBorder(Acknowledgements(), "Acknowledgements"),
                 ModalDialog.createOption().setAnimationEnabled(true)
             )
         }
         helpMenu.add(acknowledgementsItem)
 
+        val settingsButton = FlatButton()
+        settingsButton.icon =
+            FlatSVGIcon("us/wprust/jvm/components/menubar/inlineSettings.svg")
+        settingsButton.buttonType = ButtonType.toolBarButton
+        settingsButton.isFocusable = false
+        settingsButton.addActionListener { _: ActionEvent? -> settingsAction(frame) }
+        menuBar.add(Box.createGlue())
+        menuBar.add(settingsButton)
+
         return menuBar
+    }
+
+    private fun settingsAction(frame: JFrame) {
+        frame.isAlwaysOnTop = false
+
+        val selected = JOptionPane.showInputDialog(
+            null,
+            "Set Concurrent Chapter Count:",
+            "Concurrency Settings",
+            JOptionPane.INFORMATION_MESSAGE,
+            null,
+            allowedConcurrencyValues,
+            concurrentChapterCount
+        )
+
+        if (selected != null) {
+            val chosen = selected as UInt
+            concurrentChapterCount = chosen
+            JOptionPane.showMessageDialog(null, "Concurrent chapter count set to $chosen.")
+        }
+
+        frame.isAlwaysOnTop = false
     }
 }

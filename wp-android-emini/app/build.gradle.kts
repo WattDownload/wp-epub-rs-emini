@@ -7,7 +7,9 @@ plugins {
 
 android {
     namespace = "us.wpdl.wprust"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "us.wpdl.wprust"

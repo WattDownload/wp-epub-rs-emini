@@ -10,14 +10,14 @@ import us.wprust.jvm.components.FadingLabel
 import java.awt.Cursor
 import javax.swing.ImageIcon
 import javax.swing.JPanel
+import javax.swing.SwingConstants
 
 class CheckoutPanel : JPanel() {
 
     // Callback to notify the main window when checkout is triggered
-    lateinit var onCheckout: (storyInput: String, type: String) -> Unit
+    lateinit var onCheckout: (storyInput: String) -> Unit
     private val checkoutButton: FlatButton // Make the button a class property
     private val inputField = FlatTextField()
-    private val inputTypeComboBox = FlatComboBox<String>()
     private val logo = FlatLabel()
 
     init {
@@ -32,14 +32,9 @@ class CheckoutPanel : JPanel() {
         logo.setBounds((580 - 150) / 2, 60, 150, 150)
         add(logo)
 
-        inputTypeComboBox.isRoundRect = true
-        inputTypeComboBox.cursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)
-        inputTypeComboBox.addItem("Story ID")
-        inputTypeComboBox.addItem("Story Link")
-
-        inputField.placeholderText = "Input Wattpad Input Type Following Selection"
+        inputField.placeholderText = "Enter Wattpad story ID, story link, or part link"
+        inputField.horizontalAlignment = SwingConstants.CENTER
         inputField.isRoundRect = true
-        inputField.leadingComponent = inputTypeComboBox
         inputField.setBounds(30 + 25, 30 + 220, 580 - 60 - 50, 30)
         add(inputField)
 
@@ -53,7 +48,7 @@ class CheckoutPanel : JPanel() {
         // The action listener now just calls the callback
         checkoutButton.addActionListener {
             if (::onCheckout.isInitialized) {
-                onCheckout(inputField.text, inputTypeComboBox.selectedItem as String)
+                onCheckout(inputField.text)
             }
         }
     }
@@ -67,9 +62,19 @@ class CheckoutPanel : JPanel() {
         rootPane.defaultButton = checkoutButton
     }
 
-    fun rest() {
-        inputField.text = null
-        inputTypeComboBox.selectedItem = 0
+    fun disableCheckout() {
+        checkoutButton.isEnabled = false
+        inputField.isEnabled = false
     }
 
+    fun enableCheckout() {
+        checkoutButton.isEnabled = true
+        inputField.isEnabled = true
+    }
+
+    fun rest() {
+        inputField.text = null
+        checkoutButton.isEnabled = true
+        inputField.isEnabled = true
+    }
 }

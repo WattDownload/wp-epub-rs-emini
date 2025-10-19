@@ -4,7 +4,7 @@ import com.formdev.flatlaf.FlatLaf
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange
 import com.formdev.flatlaf.themes.FlatMacDarkLaf
 import com.formdev.flatlaf.themes.FlatMacLightLaf
-import com.jthemedetecor.OsThemeDetector
+import vip.zhifen.jsysthemedetector.OsThemeDetector
 import java.util.*
 import javax.swing.ImageIcon
 import javax.swing.JFrame

@@ -45,7 +45,7 @@ class About : JPanel() {
 
     private val systemInformationText: String
         get() {
-            val text = "<b>WattDownloader Version: </b>%s<br/>" +
+            val text = "<b>WattDownload Version: </b>%s<br/>" +
                     "<b>Java: </b>%s<br/>" +
                     "<b>System: </b>%s<br/>"
 

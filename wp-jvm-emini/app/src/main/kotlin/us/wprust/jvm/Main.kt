@@ -6,7 +6,6 @@ import com.formdev.flatlaf.extras.FlatDesktop
 import com.formdev.flatlaf.extras.components.FlatLabel
 import com.formdev.flatlaf.fonts.jetbrains_mono.FlatJetBrainsMonoFont
 import com.formdev.flatlaf.util.SystemInfo
-import com.jthemedetecor.OsThemeDetector
 import getStoryDataAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -23,14 +22,17 @@ import raven.modal.component.SimpleModalBorder
 import raven.modal.option.Option
 import raven.modal.toast.option.ToastOption
 import raven.modal.toast.option.ToastStyle
-import uniffi.wp_epub_mini.downloadWattpadStory
 import us.wprust.jvm.components.menubar.MenuBar
 import us.wprust.jvm.scenes.*
+import us.wprust.jvm.utils.AppSettings.concurrentChapterCount
 import us.wprust.jvm.utils.CustomModalDialogs
 import us.wprust.jvm.utils.LafAction
 import us.wprust.jvm.utils.NetworkUtils
+import us.wprust.jvm.utils.getStoryIdFromPartId
+import vip.zhifen.jsysthemedetector.OsThemeDetector
 import java.awt.Color
 import java.awt.Component
+import java.awt.Dimension
 import java.awt.RenderingHints
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -44,7 +46,6 @@ import java.util.*
 import javax.imageio.ImageIO
 import javax.swing.*
 import kotlin.system.exitProcess
-
 
 class Main internal constructor(detector: OsThemeDetector) : JFrame() {
     private val usingServer = NetworkUtils.COMMON_SERVERS.GOOGLE
@@ -70,8 +71,6 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
 
         slidePane.setBounds(10, 10 + 40 + 20, 600 - 20, 500 - (10 + 40 + 20 + 10))
         add(slidePane)
-
-//        doProcess(67)
 
         bookDownloaderPanel.onDownload = { username, password ->
             if (bookDownloaderPanel.isLogin) {
@@ -135,72 +134,36 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
 
         slidePane.addSlide(checkoutPanel)
 
-        checkoutPanel.onCheckout = { storyInput, type ->
+        checkoutPanel.onCheckout = { storyInput ->
             if (storyInput.isBlank()) {
-                val message = "You must input a valid Wattpad Input";
-                ModalDialog.showModal(
-                    this, CustomModalDialogs(
-                        CustomModalDialogs.Type.WARNING, message, "Empty input field!", SimpleModalBorder.Option(
-                            "Got it!", 0
-                        ), null
-                    ), modelOption
-                )
+                showNotAValidStoryInputModalDialog(this)
             } else {
                 if (NetworkUtils.isNetworkAvailable(usingServer)) {
-                    //TODO: Do here
+                    scope.launch {
+                        val storyGroupID = resolveStoryId(storyInput)
 
-                    when (type) {
-                        "Story ID" -> {
-                            try {
-                                val storyID = storyInput.toInt()
+                        if (storyGroupID != null) {
+                            slidePane.addSlide(checkingStoryPanel, SlidePaneTransition.Type.FORWARD)
 
-                                slidePane.addSlide(checkingStoryPanel, SlidePaneTransition.Type.FORWARD)
-
-                                doProcess(storyID)
-
-                            } catch (_: NumberFormatException) {
-                                showNotANumberExceptionDialog(this)
-                            } catch (e: Exception) {
-                                showUnexpectedExceptionDialog(this, e.message)
-                            }
-                        }
-
-                        "Story Link" -> {
-                            try {
-                                val storyLink = storyInput.trim()
-
-                                val storyID = getStoryIdFromUrl(storyLink)
-
-                                slidePane.addSlide(checkingStoryPanel, SlidePaneTransition.Type.FORWARD)
-
-                                doProcess(storyID)
-
-                            } catch (e: IllegalArgumentException) {
-                                showNotAValidStoryLinkExceptionDialog(this)
-                            } catch (e: Exception) {
-                                showUnexpectedExceptionDialog(this, e.message)
-                            }
-                        }
-
-                        else -> {
-                            showSomeSeriousErrorOccurredDialog(this)
+                            doProcess(storyGroupID)
+                        } else {
+                            showFailedToExtractStoryIDExceptionDialog(this@Main)
                         }
                     }
-
                 } else {
-                    showNoNetworkExceptionModalDialog(this);
+                    showNoNetworkExceptionModalDialog(this)
                 }
             }
         }
 
         val titleLabel = FlatLabel()
-        titleLabel.setText("Wattpad Downloader")
+        titleLabel.setText("WattDownload")
         titleLabel.setBounds(0, 10, 600, 40)
         titleLabel.labelType = FlatLabel.LabelType.h0
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER)
         add(titleLabel)
 
-        detector.registerListener { isDark: Boolean? ->
+        detector.registerListener { _: Boolean? ->
             SwingUtilities.invokeLater {
                 LafAction.setTheme(false, this)
             }
@@ -242,38 +205,45 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
         })
 
         jMenuBar = MenuBar.createMenuBar(this)
-        setSize(616, 540)
-        setTitle("Wattpad Downloader")
-        setResizable(false)
+        size = Dimension(616, 540)
+        title = "WattDownload"
+        isResizable = false
         isVisible = true
         setLocationRelativeTo(null)
-        setAlwaysOnTop(true)
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE)
+        isAlwaysOnTop = true
+        defaultCloseOperation = DO_NOTHING_ON_CLOSE
     }
 
     /**
-     * Checks if the input is a valid Wattpad story link and extracts the story ID.
+     * Checks if the input is a valid WP story link and extracts the story ID.
      *
-     * @param url The input string, which must be a URL containing "/story/".
+     * @param input The input string, which must be a URL containing "/story/".
      * @return The story ID as a non-null Int.
      * @throws IllegalArgumentException if the input is not a valid link or the ID is invalid.
      */
-    fun getStoryIdFromUrl(url: String?): Int {
-        val trimmedUrl = url?.trim()
+    suspend fun resolveStoryId(input: String): Int? {
+        val trimmed = input.trim()
 
-        if (trimmedUrl.isNullOrBlank()) {
-            throw IllegalArgumentException("URL cannot be null or empty.")
+        return when {
+            // Raw numeric story ID
+            trimmed.matches(Regex("^\\d+$")) -> trimmed.toInt()
+
+            // Story link (with or without title, http(s), www)
+            trimmed.matches(Regex("^(?:https?://)?(?:www\\.)?wattpad\\.com/story/(\\d+)(?:-.*)?$")) -> {
+                val match = Regex("^(?:https?://)?(?:www\\.)?wattpad\\.com/story/(\\d+)(?:-.*)?$").find(trimmed)
+                match?.groupValues?.get(1)?.toInt()
+            }
+
+            // Story part link (with or without title, http(s), www)
+            trimmed.matches(Regex("^(?:https?://)?(?:www\\.)?wattpad\\.com/(\\d+)(?:-.*)?$")) -> {
+                val match = Regex("^(?:https?://)?(?:www\\.)?wattpad\\.com/(\\d+)(?:-.*)?$").find(trimmed)
+                val partId = match?.groupValues?.get(1)?.toInt()
+                if (partId != null) getStoryIdFromPartId(partId) else null
+            }
+
+            else -> null
         }
-
-        val storyUrlPattern = Regex("""/story/(\d+)""")
-
-        // Chain of operations: find -> get string ID -> convert to Int
-        return storyUrlPattern.find(trimmedUrl)
-            ?.groupValues?.getOrNull(1) // Gets the ID as a String, e.g., "123456789"
-            ?.toIntOrNull()             // Safely converts the String to an Int?
-            ?: throw IllegalArgumentException("Input is not a valid Wattpad story link or contains an invalid ID.")
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // --- ADDED HELPER FUNCTIONS ---
@@ -302,10 +272,7 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
     private fun promptToSaveFile() {
         if (tempEpubFile == null || !tempEpubFile!!.exists()) {
             Toast.show(
-                this,
-                Toast.Type.WARNING,
-                "Temporary file not found. Please try the download again.",
-                toastOption
+                this, Toast.Type.WARNING, "Temporary file not found. Please try the download again.", toastOption
             )
             return
         }
@@ -373,7 +340,7 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
                         withContext(Dispatchers.Main) {
                             downloadingPanel.updateStatus("Authenticating...")
                         }
-                        uniffi.wp_epub_mini.login(username, password)
+                        uniffi.uniffi_wp_epub_mini.login(username, password)
                     }
 
                     withContext(Dispatchers.Main) {
@@ -381,23 +348,23 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
                     }
 
                     // Call the Rust function to download the file to our temp path
-                    downloadWattpadStory(
-                        storyId = storyId,
+                    uniffi.uniffi_wp_epub_mini.downloadStoryToFile(
+                        storyId = storyId.toULong(),
                         embedImages = isEmbedImages,
-                        concurrentRequests = 20uL, // Or your preferred value
+                        concurrentRequests = concurrentChapterCount, // Or your preferred value
                         outputPath = tempEpubFile!!.absolutePath
                     )
                 }
 
                 // Success: Stop timer and update UI
-                timerJob?.cancel()
+                timerJob.cancel()
                 val duration = System.currentTimeMillis() - downloadStartTime
                 successfulDownloadTitle = result.title
 
                 downloadResultPanel.showResult(
                     isSuccess = true,
                     title = "Download Successful!",
-                    message = "Story '${result.title}' was downloaded in ${formatElapsedTime(duration)}."
+                    message = "Story '${successfulDownloadTitle}' was downloaded in ${formatElapsedTime(duration)}."
                 )
                 slidePane.addSlide(downloadResultPanel, SlidePaneTransition.Type.FORWARD)
 
@@ -411,8 +378,8 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
 
                 // Customize error messages based on exception type
                 val errorTitle = when (e) {
-                    is uniffi.wp_epub_mini.EpubException.Authentication -> "Authentication Failed"
-                    is uniffi.wp_epub_mini.EpubException.Download -> "Download Failed"
+                    is uniffi.uniffi_wp_epub_mini.WpEpubException.AuthenticationFailed -> "Authentication Failed"
+                    is uniffi.uniffi_wp_epub_mini.WpEpubException.DownloadFailed -> "Download Failed"
                     is IOException -> "File System Error"
                     else -> "An Unexpected Error Occurred"
                 }
@@ -565,72 +532,60 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
         return ImageIO.read(bytes.inputStream())
     }
 
-    private fun showSomeSeriousErrorOccurredDialog(component: Component?) {
-        val message = "Some serious error occurred!"
+    private fun showNotAValidStoryInputModalDialog(component: Component?, onClose: (() -> Unit)? = null) {
         ModalDialog.showModal(
             component, CustomModalDialogs(
-                CustomModalDialogs.Type.ERROR, message, "Some Serious Error", SimpleModalBorder.Option("Hmm!", 0), null
-            ), modelOption
+                CustomModalDialogs.Type.WARNING,
+                "You must input a valid WP Input",
+                "Empty input field!",
+                SimpleModalBorder.Option("Got it!", 0)
+            ) { _, _ -> onClose?.invoke() }, modelOption
         )
     }
 
-    private fun showNoNetworkExceptionModalDialog(component: Component?) {
+    private fun showNoNetworkExceptionModalDialog(component: Component?, onClose: (() -> Unit)? = null) {
         ModalDialog.showModal(
             component, CustomModalDialogs(
                 CustomModalDialogs.Type.WARNING,
                 "No active internet connection! Couldn't access: $usingServer",
                 "Couldn't access internet!",
-                SimpleModalBorder.Option("I'll Check!", 0),
-                null
-            ), modelOption
+                SimpleModalBorder.Option("I'll Check!", 0)
+            ) { _, _ -> onClose?.invoke() }, modelOption
         )
     }
 
-    private fun showUnexpectedExceptionDialog(owner: Component?, message: String? = "Unknown Error") {
+    private fun showUnexpectedExceptionDialog(
+        owner: Component?, message: String? = "Unknown Error", onClose: (() -> Unit)? = null
+    ) {
         ModalDialog.showModal(
             owner, CustomModalDialogs(
                 CustomModalDialogs.Type.ERROR,
                 "Some unexpected error occurred: $message",
                 "Unexpected error!",
-                SimpleModalBorder.Option("Hmm", 0),
-                null
-            ), modelOption
+                SimpleModalBorder.Option("Hmm", 0)
+            ) { _, _ -> onClose?.invoke() }, modelOption
         )
     }
 
-    private fun showFetchExceptionDialog(owner: Component?) {
+    private fun showFetchExceptionDialog(owner: Component?, onClose: (() -> Unit)? = null) {
         ModalDialog.showModal(
             owner, CustomModalDialogs(
                 CustomModalDialogs.Type.ERROR,
                 "The Story you gave us seems to be not available!",
                 "Not Available!",
-                SimpleModalBorder.Option("Hmm", 0),
-                null
-            ), modelOption
+                SimpleModalBorder.Option("Hmm", 0)
+            ) { _, _ -> onClose?.invoke() }, modelOption
         )
     }
 
-    private fun showNotANumberExceptionDialog(owner: Component?) {
+    private fun showFailedToExtractStoryIDExceptionDialog(owner: Component?, onClose: (() -> Unit)? = null) {
         ModalDialog.showModal(
             owner, CustomModalDialogs(
                 CustomModalDialogs.Type.ERROR,
-                "Your input is not a valid number despite selected type!",
-                "Not a number!",
-                SimpleModalBorder.Option("Ah, I'm mistaken", 0),
-                null
-            ), modelOption
-        )
-    }
-
-    private fun showNotAValidStoryLinkExceptionDialog(owner: Component?) {
-        ModalDialog.showModal(
-            owner, CustomModalDialogs(
-                CustomModalDialogs.Type.ERROR,
-                "Your input is not a valid wattpad story link despite selected type!",
-                "Not a valid story link!",
-                SimpleModalBorder.Option("Ah, I'm mistaken", 0),
-                null
-            ), modelOption
+                "Your input it not a story input. Couldn't extract a story id.",
+                "Couldn't Extract Story Id!",
+                SimpleModalBorder.Option("Ah, I'm mistaken", 0)
+            ) { _, _ -> onClose?.invoke() }, modelOption
         )
     }
 
@@ -645,7 +600,6 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
             get() {
                 val checkoutPanel = JPanel()
                 checkoutPanel.setLayout(null)
-                //        jPanel.setBorder(new FlatLineBorder(new Insets(4,4,4,4),9));
                 checkoutPanel.setBounds(0, 0, 600 - 20, 500 - (10 + 40 + 20 + 10))
                 checkoutPanel.putClientProperty(
                     FlatClientProperties.STYLE,
@@ -670,7 +624,7 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
         fun main(args: Array<String>) {
             if (SystemInfo.isMacOS) {
                 System.setProperty("apple.laf.useScreenMenuBar", "true")
-                System.setProperty("apple.awt.application.name", "Wattpad Downloader")
+                System.setProperty("apple.awt.application.name", "WattDownload")
                 System.setProperty("apple.awt.application.appearance", "system")
             }
 
@@ -685,7 +639,7 @@ class Main internal constructor(detector: OsThemeDetector) : JFrame() {
 
             UIManager.put(
                 "Button.default.foreground", Color.white
-            ); // For default buttons (often has accent background)
+            ) // For default buttons (often has accent background)
 
             UIManager.put("Button.arc", 999)
             UIManager.put("Component.arc", 999)
