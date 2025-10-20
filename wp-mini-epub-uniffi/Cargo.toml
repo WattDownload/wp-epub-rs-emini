@@ -22,3 +22,7 @@ uniffi = { version = "0.30.0", features = ["build"] }
 [[bin]]
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
+
+[profile.release]
+strip = true
+lto = true
