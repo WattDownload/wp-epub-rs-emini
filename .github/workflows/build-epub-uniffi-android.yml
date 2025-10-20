@@ -41,6 +41,7 @@ jobs:
       run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
 
     - name: Build dll for bindings.
+      working-directory: ./wp-mini-epub-uniffi
       run: cargo build --release
       
     - name: Generate Kotlin Bindings
