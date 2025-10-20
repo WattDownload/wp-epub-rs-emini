@@ -48,7 +48,7 @@ jobs:
       
     - name: Generate Kotlin Bindings
       working-directory: ./wp-mini-epub-uniffi 
-      run: cargo run --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
+      run: cargo run --features=uniffi/cli --bin uniffi-bindgen generate --library target/debug/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
       
     - name: Show all folders
       working-directory: ./wp-mini-epub-uniffi
