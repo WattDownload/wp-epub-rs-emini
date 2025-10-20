@@ -4,16 +4,16 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'wp-backend-rs-emini/epub-uniffi/src/**'
-      - 'wp-backend-rs-emini/epub-uniffi/Cargo.toml'
-      - 'wp-backend-rs-emini/epub-uniffi/.cargo/**'
+      - 'wp-mini-epub-uniffi/src/**'
+      - 'wp-mini-epub-uniffi/Cargo.toml'
+      - 'wp-mini-epub-uniffi/.cargo/**'
       
   pull_request:
     branches: [ "main" ]
     paths:
-      - 'wp-backend-rs-emini/epub-uniffi/src/**'
-      - 'wp-backend-rs-emini/epub-uniffi/Cargo.toml'
-      - 'wp-backend-rs-emini/epub-uniffi/.cargo/**'
+      - 'wp-mini-epub-uniffi/src/**'
+      - 'wp-mini-epub-uniffi/Cargo.toml'
+      - 'wp-mini-epub-uniffi/.cargo/**'
 
   workflow_dispatch:
 
@@ -25,10 +25,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
     
     - name: Install build-ndk
-      run: cargo install cargo-ndk
+      run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
     - name: Install toolchains
       run: |
@@ -39,14 +39,13 @@ jobs:
           i686-linux-android
 
     - name: Build
-      working-directory: ./wp-backend-rs-emini 
+      working-directory: ./wp-mini-epub-uniffi 
       run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
       
     - name: Generate Kotlin Bindings
-      working-directory: ./wp-backend-rs-emini 
-      run: |
-        cargo run --bin uniffi-bindgen generate wp-epub-mini/src/wp_epub_mini.udl --language kotlin --out-dir ./bindings/
-  
+      working-directory: ./wp-mini-epub-uniffi 
+      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library jniLibs/arm64-v8a/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
+      
     - name: Show all folders
       run: Get-ChildItem -Recurse
       shell: pwsh
