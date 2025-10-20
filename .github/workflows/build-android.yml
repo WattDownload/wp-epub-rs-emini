@@ -96,10 +96,10 @@ jobs:
         cp -r ./backend-artifacts/bindings/uniffi/* ./wp-android-emini/app/src/main/java/uniffi/
         
     - name: set up GraalVM 24
-      uses: graalvm/setup-graalvm@v1
-      with:
-        java-version: '24'      # See 'Options' for more details
-        distribution: 'graalvm' # See 'Supported distributions' for available options
+      uses: actions/setup-java@v5
+        with:
+          distribution: 'oracle' # See 'Supported distributions' for available options
+          java-version: '21'
         
     - name: Grant execute permission for gradlew
       working-directory: ./wp-android-emini
