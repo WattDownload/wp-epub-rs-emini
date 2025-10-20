@@ -27,8 +27,11 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     
-    - name: Install build-ndk
+    - name: Install cargo-binstall
       run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+
+    - name: Install cargo-ndk
+      run: cargo binstall cargo-ndk
 
     - name: Install toolchains
       run: |
