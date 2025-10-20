@@ -34,7 +34,8 @@ jobs:
       run: cargo binstall cargo-ndk
 
     - name: Install toolchains
-      run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
+      run: rustup target add aarch64-linux-android 
+      # armv7-linux-androideabi x86_64-linux-android i686-linux-android 
 
     - name: Build
       working-directory: ./wp-mini-epub-uniffi 
@@ -42,11 +43,11 @@ jobs:
 
     - name: Build dll for bindings.
       working-directory: ./wp-mini-epub-uniffi
-      run: cargo build --release
+      run: cargo build --debug
       
     - name: Generate Kotlin Bindings
       working-directory: ./wp-mini-epub-uniffi 
-      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
+      run: cargo run --debug --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
       
     - name: Show all folders
       working-directory: ./wp-mini-epub-uniffi
