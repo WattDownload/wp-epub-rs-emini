@@ -30,7 +30,7 @@ jobs:
     - name: Install cargo-binstall
     - uses: cargo-bins/cargo-binstall@main
     
-    - name: Install cargo-ndk
+    - name: Install cargo-ndk with cargo binstall
       run: cargo binstall cargo-ndk
 
     - name: Install toolchains
