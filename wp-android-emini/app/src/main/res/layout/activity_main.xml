@@ -30,8 +30,24 @@
             android:id="@+id/main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="24dp"
-            android:fitsSystemWindows="true">
+            android:fitsSystemWindows="true"
+            android:paddingBottom="24dp">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/logo"
+                android:layout_width="175dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="125dp"
+                android:layout_marginTop="1dp"
+                android:layout_marginEnd="125dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/logo"
+                app:layout_constraintBottom_toTopOf="@id/textInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.3" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout"
@@ -43,7 +59,7 @@
                 android:hint="@string/wattpad_link_or_id"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toBottomOf="@+id/logo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/urlBox"
@@ -159,7 +175,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:layout_marginBottom="150dp"
                 android:text="@string/checkout"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/isImages" />
