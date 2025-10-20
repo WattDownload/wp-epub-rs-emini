@@ -1,22 +1,25 @@
-val buildUniversalApk = providers.gradleProperty("buildUniversalApk").forUseAtConfigurationTime().orNull == "true"
+val buildUniversalApk = providers.gradleProperty("buildUniversalApk")
+    .map { it == "true" }
+    .getOrElse(false)
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
 }
 
 android {
     namespace = "us.wpdl.wprust"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
 
     defaultConfig {
         applicationId = "us.wpdl.wprust"
         minSdk = 29
         targetSdk = 36
-        
+
         // Read version code from a gradle property, defaulting to 1 for local builds.
         versionCode = providers.gradleProperty("ciVersionCode").orNull?.toInt() ?: 1
-        
+
         // Read version name from a gradle property, defaulting to "1.0-local" for local builds.
         versionName = providers.gradleProperty("ciVersionName").orNull ?: "1.0-local"
 
@@ -43,10 +46,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
-    kotlinOptions {
-        jvmTarget = "21"
-    }
-
     splits {
         // This block configures splitting based on Application Binary Interface (ABI)
         abi {
@@ -67,7 +66,7 @@ dependencies {
     implementation(libs.lottie)
 
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna
-    implementation("net.java.dev.jna:jna:5.17.0@aar")
+    implementation("net.java.dev.jna:jna:5.18.1@aar")
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)

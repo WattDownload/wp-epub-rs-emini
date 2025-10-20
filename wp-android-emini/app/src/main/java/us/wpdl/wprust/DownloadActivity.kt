@@ -15,10 +15,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import uniffi.wp_epub_mini.downloadWattpadStory
+import uniffi.uniffi_wp_epub_mini.WpEpubException
+import uniffi.uniffi_wp_epub_mini.downloadStoryToFile
+import uniffi.uniffi_wp_epub_mini.login
 import us.wpdl.wprust.databinding.ActivityDownloadBinding
 import java.io.File
 import java.io.IOException
+import androidx.core.net.toUri
 
 class DownloadActivity : AppCompatActivity() {
 
@@ -69,10 +72,8 @@ class DownloadActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         // Restore the temp file URI if the activity is being recreated
-        if (savedInstanceState != null) {
-            savedInstanceState.getString(KEY_TEMP_URI)?.let { uriString ->
-                tempEpubUri = Uri.parse(uriString)
-            }
+        savedInstanceState?.getString(KEY_TEMP_URI)?.let { uriString ->
+            tempEpubUri = uriString.toUri()
         }
 
         binding.finishButton.setOnClickListener {
@@ -132,7 +133,7 @@ class DownloadActivity : AppCompatActivity() {
                 // Check for credentials and call the authentication method.
                 if (!username.isNullOrEmpty() && !password.isNullOrEmpty()) {
 
-                    uniffi.wp_epub_mini.login(username, password)
+                    login(username, password)
 
                     withContext(Dispatchers.Main) {
                         binding.statusTextView.text =
@@ -149,11 +150,11 @@ class DownloadActivity : AppCompatActivity() {
                 val tempFilePath = tempFile.absolutePath
 
                 // 2. Call Rust and pass the file path
-                val result = downloadWattpadStory(
-                    storyId = storyId,
+                val result = downloadStoryToFile(
+                    storyId = storyId.toULong(),
                     embedImages = isImages,
-                    concurrentRequests = 20uL,
-                    outputPath = tempFilePath // <-- Pass the path here
+                    concurrentRequests = 20u,
+                    outputPath = tempFilePath
                 )
 
                 // The download is finished. Now stop the timer.
@@ -161,7 +162,7 @@ class DownloadActivity : AppCompatActivity() {
                 val formattedTime = formatElapsedTime(durationMillis)
 
                 // 3. Store the URI of the successfully created temp file
-                tempEpubUri = Uri.fromFile(File(result.outputPath))
+                tempEpubUri = Uri.fromFile(tempFile)
 
                 // 4. Switch to the main thread to prompt the user
                 // Switch to the main thread to update UI and prompt the user
@@ -170,20 +171,21 @@ class DownloadActivity : AppCompatActivity() {
                     binding.timerTextView.text = formattedTime // Set the final time
 
                     // Update the status text to show completion time
-                    binding.statusTextView.text = "Download complete in $formattedTime. Please choose a save location."
+                    binding.statusTextView.text =
+                        "Download complete in $formattedTime. Please choose a save location."
 
                     // Now prompt to save
                     val defaultFileName = sanitizeFilename(result.title) + ".epub"
                     promptUserToSaveFile(defaultFileName)
                 }
-            } catch (e: uniffi.wp_epub_mini.EpubException.Authentication) {
+            } catch (e: WpEpubException.AuthenticationFailed) {
                 println("❌ Login failed!")
-                println("   └── Reason: ${e.reason}")
+                println("   └── Reason: ${e.cause}")
                 withContext(Dispatchers.Main) {
                     showError("A auth error occurred: ${e.message}")
                 }
-            } catch (e: uniffi.wp_epub_mini.EpubException.Download) {
-                println("❌ Download failed: ${e.reason}")
+            } catch (e: WpEpubException.DownloadFailed) {
+                println("❌ Download failed: ${e.cause}")
                 withContext(Dispatchers.Main) {
                     showError("A download error occurred: ${e.message}")
                 }
@@ -224,7 +226,7 @@ class DownloadActivity : AppCompatActivity() {
                         }
                         try {
                             startActivity(viewIntent)
-                        } catch (e: ActivityNotFoundException) {
+                        } catch (_: ActivityNotFoundException) {
                             Snackbar.make(
                                 binding.root,
                                 "No application found to open EPUB files.",

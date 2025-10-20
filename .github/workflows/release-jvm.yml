@@ -10,38 +10,38 @@ permissions:
 
 env:
   CARGO_TERM_COLOR: always
-  # Define the working directory as an environment variable for easier reuse
-  WORKING_DIR: ./wp-backend-rs-emini
+  WORKING_DIR: ./wp-mini-epub-uniffi
   JVM_WORKING_DIR: ./wp-jvm-emini
 
 jobs:
-  # Your existing Windows job, slightly modified for consistency
   rust-build-windows:
     runs-on: windows-2025
 
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ${{ env.WORKING_DIR }}
+
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Install toolchain
       run: rustup target add x86_64-pc-windows-msvc
 
     - name: Build
-      working-directory: ${{ env.WORKING_DIR }}
-      run: cargo build --package wp-epub-mini --release
+      run: cargo build --release
       
     - name: Generate Kotlin Bindings
-      working-directory: ${{ env.WORKING_DIR }}
-      run: cargo run --bin uniffi-bindgen generate wp-epub-mini/src/wp_epub_mini.udl --language kotlin --out-dir ./bindings/
+      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/uniffi_wp_epub_mini.dll --language kotlin --out-dir ./bindings/
 
     - name: Organize Artifacts
-      shell: pwsh
       run: |
         # Create the directory for the native library
-        New-Item -ItemType Directory -Force -Path "${{ env.WORKING_DIR }}/nativeLibs"
+        New-Item -ItemType Directory -Force -Path "nativeLibs"
         
         # Move the compiled DLL to the new directory
         # The crate name from Cargo.toml is 'uniffi_wp_epub_mini'
-        Move-Item -Path "${{ env.WORKING_DIR }}/target/release/uniffi_wp_epub_mini.dll" -Destination "${{ env.WORKING_DIR }}/nativeLibs/"
+        Move-Item -Path "target/release/uniffi_wp_epub_mini.dll" -Destination "nativeLibs/"
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -52,12 +52,11 @@ jobs:
           ${{ env.WORKING_DIR }}/bindings
         if-no-files-found: error
 
-  # --- New Job for Linux ---
   rust-build-linux:
-    runs-on: ubuntu-latest # Use a standard Ubuntu runner for x86_64 Linux
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Install system dependencies
       run: sudo apt-get update && sudo apt-get install -y build-essential
@@ -67,7 +66,7 @@ jobs:
 
     - name: Build
       working-directory: ${{ env.WORKING_DIR }}
-      run: cargo build --package wp-epub-mini --release
+      run: cargo build --release
       
     - name: Organize Artifacts
       run: |
@@ -86,20 +85,18 @@ jobs:
           artifact_content/
         if-no-files-found: error
 
-  # --- New Job for macOS (Apple Silicon) ---
   rust-build-macos-aarch64:
-    # NOTE: Use macos-15 for native Apple Silicon builds. This is crucial.
     runs-on: macos-15
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Install toolchain
       run: rustup target add aarch64-apple-darwin
 
     - name: Build
       working-directory: ${{ env.WORKING_DIR }}
-      run: cargo build --package wp-epub-mini --release
+      run: cargo build --release
       
     - name: Organize Artifacts
       run: |
@@ -126,10 +123,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         
       - name: Download backend artifacts      
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           path: ${{ env.JVM_WORKING_DIR }}/native-backends/
 
@@ -231,7 +228,7 @@ jobs:
    
     steps:      
       - name: Download backend build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           # Use a pattern to download only the backend artifacts
           pattern: epub-uniffi-builds-*
@@ -242,7 +239,7 @@ jobs:
           zip -r jvm-backend-${{ github.ref_name }}.zip ./backend-artifacts
      
       - name: Download release jars
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: release-jars
           path: ./release-jars

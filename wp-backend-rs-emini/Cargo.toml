@@ -1,7 +1,0 @@
-# emini-project/Cargo.toml
-[workspace]
-members = [
-    "wp-epub-mini",
-    "wattpad-rs",
-]
-resolver = "3"

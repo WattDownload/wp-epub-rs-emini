@@ -16,27 +16,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
-    - name: Install build-ndk
-      run: cargo install cargo-ndk
+    - name: Install cargo-binstall
+      uses: cargo-bins/cargo-binstall@main
+    
+    - name: Install cargo-ndk with cargo binstall
+      run: cargo binstall cargo-ndk
 
     - name: Install toolchains
-      run: |
-        rustup target add \
-          aarch64-linux-android \
-          armv7-linux-androideabi \
-          x86_64-linux-android \
-          i686-linux-android
+      run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android 
 
     - name: Build
-      working-directory: ./wp-backend-rs-emini 
+      working-directory: ./wp-mini-epub-uniffi 
       run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
       
+    - name: Build dll for bindings.
+      working-directory: ./wp-mini-epub-uniffi
+      run: cargo build
+      
     - name: Generate Kotlin Bindings
-      working-directory: ./wp-backend-rs-emini 
-      run: |
-        cargo run --bin uniffi-bindgen generate wp-epub-mini/src/wp_epub_mini.udl --language kotlin --out-dir ./bindings/
+      working-directory: ./wp-mini-epub-uniffi 
+      run: cargo run --features=uniffi/cli --bin uniffi-bindgen generate --library target/debug/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
   
     - name: Show all folders
       run: Get-ChildItem -Recurse
@@ -47,8 +48,8 @@ jobs:
       with:
         name: backend-builds
         path: |
-          ./wp-backend-rs-emini/jniLibs
-          ./wp-backend-rs-emini/bindings
+          ./wp-mini-epub-uniffi/jniLibs
+          ./wp-mini-epub-uniffi/bindings
         if-no-files-found: error
 
   build-android:
@@ -56,10 +57,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Download backend artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v5
       with:
         name: backend-builds
         path: ./backend-artifacts # Download to a temporary folder
@@ -178,7 +179,7 @@ jobs:
     
     steps:      
       - name: Download backend artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: backend-builds
           path: ./backend-${{ github.ref_name }}
