@@ -3,3 +3,9 @@
 
 # Ignore Gradle build output directory
 build
+
+app/src/main/resources/**/*.dll
+app/src/main/resources/**/*.so
+app/src/main/resources/**/*.dylib
+
+app/src/main/kotlin/uniffi
