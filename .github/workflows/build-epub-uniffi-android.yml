@@ -22,7 +22,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v5
@@ -44,14 +44,17 @@ jobs:
     - name: Build
       working-directory: ./wp-mini-epub-uniffi 
       run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
+
+    - name: Build dll for bindings.
+      run: cargo build --release
       
     - name: Generate Kotlin Bindings
       working-directory: ./wp-mini-epub-uniffi 
-      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library jniLibs/arm64-v8a/libuniffi_wp_epub_mini.so --language kotlin --out-dir ./bindings/
+      run: cargo run --release --features=uniffi/cli --bin uniffi-bindgen generate --library target/release/uniffi_wp_epub_mini.dll --language kotlin --out-dir ./bindings/
       
     - name: Show all folders
+      working-directory: ./wp-mini-epub-uniffi
       run: Get-ChildItem -Recurse
-      shell: pwsh
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
