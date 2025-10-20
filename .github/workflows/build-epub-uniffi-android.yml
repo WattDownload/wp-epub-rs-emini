@@ -26,11 +26,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
-    
-    - name: Install cargo-binstall
-      run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
 
-    - name: Install cargo-ndk
+    - name: Install cargo-binstall
+      uses: cargo-bins/cargo-binstall@main
+    
+    - name: Install cargo-ndk with cargo binstall
       run: cargo binstall cargo-ndk
 
     - name: Install toolchains
@@ -58,6 +58,6 @@ jobs:
       with:
         name: epub-uniffi-builds
         path: |
-          ./wp-backend-rs-emini/jniLibs
-          ./wp-backend-rs-emini/bindings
+          ./wp-mini-epub-uniffi/jniLibs
+          ./wp-mini-epub-uniffi/bindings
         if-no-files-found: error
