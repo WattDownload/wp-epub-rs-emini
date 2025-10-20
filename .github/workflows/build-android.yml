@@ -97,9 +97,9 @@ jobs:
         
     - name: set up GraalVM 24
       uses: actions/setup-java@v5
-        with:
-          distribution: 'oracle' # See 'Supported distributions' for available options
-          java-version: '21'
+      with:
+        distribution: 'oracle' # See 'Supported distributions' for available options
+        java-version: '21'
         
     - name: Grant execute permission for gradlew
       working-directory: ./wp-android-emini
