@@ -222,7 +222,7 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_about -> {
                 MaterialAlertDialogBuilder(this)
-                    .setTitle("About WPRust")
+                    .setTitle("About WattDownload")
                     .setView(dialogAboutView) // Use setView() instead of setMessage()
                     .setPositiveButton("Satisfied!") { dialog, _ -> dialog.dismiss() }
                     .setCancelable(true)
