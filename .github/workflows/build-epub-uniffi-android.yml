@@ -34,13 +34,11 @@ jobs:
       run: cargo binstall cargo-ndk
 
     - name: Install toolchains
-      run: rustup target add aarch64-linux-android 
-      # armv7-linux-androideabi x86_64-linux-android i686-linux-android 
+      run: rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android 
 
     - name: Build
       working-directory: ./wp-mini-epub-uniffi 
-      run: cargo ndk --platform 29 -t arm64-v8a -o ./jniLibs build --release
-      # run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
+      run: cargo ndk --platform 29 -t armeabi-v7a -t arm64-v8a -t x86 -t x86_64 -o ./jniLibs build --release
 
     - name: Build dll for bindings.
       working-directory: ./wp-mini-epub-uniffi
