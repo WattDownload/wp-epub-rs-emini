@@ -1,1 +1,4 @@
 /target
+/jniLibs
+/bindings
+/uniffi-bindings
