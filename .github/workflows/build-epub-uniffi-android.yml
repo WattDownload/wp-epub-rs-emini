@@ -26,9 +26,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v5
+
+    - name: Install cargo-binstall
+    - uses: cargo-bins/cargo-binstall@main
     
     - name: Install cargo-ndk
-      uses: taiki-e/install-action@cargo-ndk
+      run: cargo binstall cargo-ndk
 
     - name: Install toolchains
       run: |
