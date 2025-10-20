@@ -97,7 +97,7 @@ jobs:
         
     - uses: graalvm/setup-graalvm@v1
       with:
-        java-version: '24'
+        java-version: '21'
         distribution: 'graalvm'
 
     - name: Grant execute permission for gradlew
