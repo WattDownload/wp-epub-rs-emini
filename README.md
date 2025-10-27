@@ -52,7 +52,9 @@
 ---
 
 ### JVM
- - Windows x86_64 : Has 2 options:
+ - Windows x86_64 : Has 3 options:
+   - Install with `exe` installer and use
+     - File name follows `windows-x86_64-wprust-*.*.*-setup.exe` pattern.
    - Use `zip` file with bundled JRE and use
      - File name follows `windows-x86_64-wprust-*.*.*-with-jre.zip` pattern.
    - Use jar file with your own installed JDK.
@@ -60,9 +62,7 @@
  > [!WARNING]
  > You need to have `GraalVM 24` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/windows/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator. 
 ---
- - Linux x86_64 : Has 2 options:
-   - Use `AppImage` file (bundled JRE) and use. (In Ubuntu you may need to install `libfuse2`)
-     - File name follows `linux-x86_64-wprust-*.*.*-with-jre.AppImage`
+ - Linux x86_64 : Has 1 option:
    - Use jar file with your own installed JDK.
      - File name follows `linux-x86_64-wprust-*.*.*.jar` pattern
  > [!WARNING]
