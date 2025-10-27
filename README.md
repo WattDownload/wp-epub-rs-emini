@@ -60,7 +60,7 @@
    - Use jar file with your own installed JDK.
      - File name follows `windows-x86_64-wprust-*.*.*.jar` pattern.
  > [!WARNING]
- > You need to have `GraalVM 24` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/windows/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator. 
+ > You need to have `GraalVM 24` installed and configured to use the third option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/windows/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator. 
 ---
  - Linux x86_64 : Has 1 option:
    - Use jar file with your own installed JDK.
