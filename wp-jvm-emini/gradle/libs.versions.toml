@@ -2,7 +2,7 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
-kotlin = "2.3.0-Beta1"
+kotlin = "2.3.0-Beta2"
 
 [libraries]
 
