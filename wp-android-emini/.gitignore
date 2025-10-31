@@ -15,3 +15,5 @@
 local.properties
 /jniLibs
 /app/src/main/java/uniffi
+.kotlin
+/app/build
