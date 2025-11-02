@@ -180,7 +180,7 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          java-version: '24'      # See 'Options' for more details
+          java-version: '25'      # See 'Options' for more details
           distribution: 'graalvm' # See 'Supported distributions' for available options
 
       - name: Grant execute permission for gradlew
