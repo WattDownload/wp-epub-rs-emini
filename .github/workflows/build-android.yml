@@ -99,7 +99,7 @@ jobs:
       uses: actions/setup-java@v5
       with:
         distribution: 'oracle' # See 'Supported distributions' for available options
-        java-version: '21'
+        java-version: '25'
         
     - name: Grant execute permission for gradlew
       working-directory: ./wp-android-emini
