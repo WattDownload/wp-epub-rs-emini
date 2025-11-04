@@ -24,5 +24,6 @@ name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
 [profile.release]
+codegen-units = 1
 strip = true
 lto = true
