@@ -1,3 +1,5 @@
+package us.wprust.jvm.utils.basic_details
+
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
