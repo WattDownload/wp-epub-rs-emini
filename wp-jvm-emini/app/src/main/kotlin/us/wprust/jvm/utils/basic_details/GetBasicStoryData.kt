@@ -6,8 +6,6 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.coroutines.executeAsync
-import us.wprust.jvm.utils.basic_details.Story
-import us.wprust.jvm.utils.basic_details.User
 
 val client = OkHttpClient()
 val jsonParser = Json { ignoreUnknownKeys = true }

@@ -6,7 +6,6 @@ import com.formdev.flatlaf.extras.components.FlatComboBox
 import com.formdev.flatlaf.extras.components.FlatLabel
 import com.formdev.flatlaf.extras.components.FlatTextField
 import us.wprust.jvm.Main.Companion.sliderPanel
-import us.wprust.jvm.components.FadingLabel
 import java.awt.Cursor
 import javax.swing.ImageIcon
 import javax.swing.JPanel

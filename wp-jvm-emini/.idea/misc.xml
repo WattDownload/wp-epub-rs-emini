@@ -5,5 +5,5 @@
     <file type="web" url="file://$PROJECT_DIR$" />
   </component>
   <component name="KubernetesApiProvider"><![CDATA[{}]]></component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_24" default="true" project-jdk-name="graalvm-24" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_25" default="true" project-jdk-name="graalvm-24" project-jdk-type="JavaSDK" />
 </project>

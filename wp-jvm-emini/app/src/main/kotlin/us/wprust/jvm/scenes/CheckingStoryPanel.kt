@@ -1,11 +1,9 @@
-// file: src/main/kotlin/us/wprust/jvm/scenes/CheckingStoryPanel.kt
 package us.wprust.jvm.scenes
 
 import com.formdev.flatlaf.FlatClientProperties
 import com.formdev.flatlaf.extras.components.FlatLabel
 import com.formdev.flatlaf.extras.components.FlatProgressBar
 import us.wprust.jvm.Main.Companion.sliderPanel
-import us.wprust.jvm.components.FadingLabel
 import javax.swing.ImageIcon
 import javax.swing.JPanel
 import javax.swing.SwingConstants

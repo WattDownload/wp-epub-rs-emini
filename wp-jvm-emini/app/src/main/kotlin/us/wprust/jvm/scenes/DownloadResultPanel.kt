@@ -1,4 +1,3 @@
-// src/main/kotlin/us/wprust/jvm/scenes/DownloadResultPanel.kt
 package us.wprust.jvm.scenes
 
 import com.formdev.flatlaf.FlatClientProperties

@@ -1,7 +1,7 @@
 package us.wprust.jvm.utils
 
-import client
-import jsonParser
+import us.wprust.jvm.utils.basic_details.client
+import us.wprust.jvm.utils.basic_details.jsonParser
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import okhttp3.Request
