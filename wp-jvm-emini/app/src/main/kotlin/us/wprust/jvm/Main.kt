@@ -6,7 +6,7 @@ import com.formdev.flatlaf.extras.FlatDesktop
 import com.formdev.flatlaf.extras.components.FlatLabel
 import com.formdev.flatlaf.fonts.jetbrains_mono.FlatJetBrainsMonoFont
 import com.formdev.flatlaf.util.SystemInfo
-import package us.wprust.jvm.utils.basic_details.getStoryDataAsync
+import us.wprust.jvm.utils.basic_details.getStoryDataAsync
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
