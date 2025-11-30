@@ -60,9 +60,14 @@ class MainActivity : AppCompatActivity() {
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (!sharedText.isNullOrEmpty() && sharedText.contains("wattpad.com/story/")) {
-                binding.urlBox.setText(normalizeWattpadUrl(sharedText))
-//                Snackbar.make(binding.root, sharedText, Snackbar.LENGTH_LONG).show()
-//                handleSharedLink(sharedText)
+                val normalizedWattpadID = normalizeWattpadUrl(sharedText)
+
+                if (normalizedWattpadID.isNullOrEmpty()) {
+                    Snackbar.make(binding.root, "Couldn't Extract Story Id!", Snackbar.LENGTH_LONG)
+                        .show()
+                } else {
+                    binding.urlBox.setText(normalizedWattpadID)
+                }
             } else {
                 Snackbar.make(binding.root, "No Wattpad Story Link Found!", Snackbar.LENGTH_LONG).show()
             }
