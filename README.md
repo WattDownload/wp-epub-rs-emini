@@ -28,7 +28,7 @@
 
 ## Features
 - Download any story under a minute.
-- Download purchaed content (Premium chapter) - with WP credentials.
+- Download purchased content (Premium chapter) - with WP credentials.
 - Download stories with or without images embedded.
 - Clean, Extra-Minimal UI.
 
