@@ -6,7 +6,7 @@
 
 <p align="center">
   Extra-Minimal Android and JVM apps to Download Stories from WP in EPUB (version 3) format. <br/>
-  Uses <a href="/wp-backend-rs-emini/wattpad-rs">wp-api-rs-emini</a> to download and <a href="/wp-backend-rs-emini/wp-epub-mini">wp-epub-mini</a> to generate epubs.
+  Uses <a href="https://github.com/WattDownload/crate-wp-mini">wp-mini</a> to download and <a href="https://github.com/WattDownload/crate-wp-mini-epub">wp-mini-epub</a> to generate epubs.
 </p>
 
 ---
@@ -60,19 +60,19 @@
    - Use jar file with your own installed JDK.
      - File name follows `windows-x86_64-wprust-*.*.*.jar` pattern.
  > [!WARNING]
- > You need to have `GraalVM 24` installed and configured to use the third option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/windows/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator. 
+ > You need to have `GraalVM 25` installed and configured to use the third option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/windows/) ; After configuring `GraalVM 25`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator. 
 ---
  - Linux x86_64 : Has 1 option:
    - Use jar file with your own installed JDK.
      - File name follows `linux-x86_64-wprust-*.*.*.jar` pattern
  > [!WARNING]
- > You need to have `GraalVM 24` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/linux/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator.
+ > You need to have `GraalVM 25` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/linux/) ; After configuring `GraalVM 25`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator.
 ---
  - MacOS arm64 : Has only one option:
    - Use jar file with your own installed JDK.
      - File name follows `macos-x86_64-wprust-*.*.*.jar` pattern
  > [!WARNING]
- > You need to have `GraalVM 24` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/macos/) ; After configuring `GraalVM 24`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator.
+ > You need to have `GraalVM 25` installed and configured to use the second option (Use jar file with your own installed JDK). ([Download](https://www.graalvm.org/downloads/) & [Configure](https://www.graalvm.org/latest/getting-started/macos/) ; After configuring `GraalVM 25`, execute `java -jar windows-x86_64-wprust-*.*.*.jar` in a terminal emulator.
 ---
 ## Get Started (Dev)
 - Just reach refer source and figure our yourself - at least for now.
