@@ -41,9 +41,10 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_25
-        targetCompatibility = JavaVersion.VERSION_25
+        sourceCompatibility = JavaVersion.VERSION_24
+        targetCompatibility = JavaVersion.VERSION_24
     }
 
     splits {
@@ -62,11 +63,18 @@ android {
     }
 }
 
-dependencies {
-    implementation(libs.lottie)
+kotlin {
+    compilerOptions {
+        languageVersion = org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3
+        // Optional: Set jvmTarget. Defaults to android.compileOptions.targetCompatibility
+        // jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
+    }
+}
 
+dependencies {
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna
     implementation("net.java.dev.jna:jna:5.18.1@aar")
+    implementation(libs.lottie)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.androidx.core.ktx)

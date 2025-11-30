@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textview.MaterialTextView
 import us.wpdl.wprust.ConnectionUtil.hasInternetAccess
 import us.wpdl.wprust.databinding.ActivityMainBinding
@@ -55,6 +56,18 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
 
         setupExpansionPanel()
+
+        if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
+            val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
+            if (!sharedText.isNullOrEmpty() && sharedText.contains("wattpad.com/story/")) {
+                binding.urlBox.setText(normalizeWattpadUrl(sharedText))
+//                Snackbar.make(binding.root, sharedText, Snackbar.LENGTH_LONG).show()
+//                handleSharedLink(sharedText)
+            } else {
+                Snackbar.make(binding.root, "No Wattpad Story Link Found!", Snackbar.LENGTH_LONG).show()
+            }
+        }
+
         binding.checkoutBtn.setOnClickListener {
             if (hasInternetAccess(applicationContext)) {
                 // Get the text from your input field
