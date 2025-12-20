@@ -31,14 +31,14 @@ dependencies {
 
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
-    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.3.0"))
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:5.3.2"))
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:okhttp-coroutines")
 
     implementation("com.formdev:flatlaf-fonts-jetbrains-mono:2.304")
-    implementation("com.formdev:flatlaf-extras:3.6.2")
+    implementation("com.formdev:flatlaf-extras:3.7")
     implementation("com.github.weisj:jsvg:2.0.0")
-    implementation("com.formdev:flatlaf:3.6.2")
+    implementation("com.formdev:flatlaf:3.7")
 
     implementation("io.github.dj-raven:modal-dialog:2.5.2")
 

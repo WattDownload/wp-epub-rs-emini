@@ -1,5 +1,5 @@
 use crate::error::WPEpubError;
-use crate::runtime::{HTTP_CLIENT, TOKIO_RUNTIME};
+use crate::runtime::{HTTP_CLIENT, WATTPAD_CLIENT, TOKIO_RUNTIME};
 use std::path::PathBuf;
 #[cfg(not(target_arch = "wasm32"))]
 use wp_mini_epub::download_story_to_file as wp_download_story_to_file;
@@ -15,7 +15,7 @@ pub fn init_runtime() {
 pub async fn login(username: String, password: String) -> Result<(), WPEpubError> {
     TOKIO_RUNTIME
         .spawn(async move {
-            wp_login(&HTTP_CLIENT, &username, &password)
+            wp_login(&WATTPAD_CLIENT, &username, &password)
                 .await
                 .map_err(WPEpubError::from)
         })
@@ -41,6 +41,7 @@ pub async fn download_story_to_file(
     TOKIO_RUNTIME
         .spawn(async move {
             wp_download_story_to_file(
+                &WATTPAD_CLIENT,
                 &HTTP_CLIENT,
                 story_id,
                 embed_images,
